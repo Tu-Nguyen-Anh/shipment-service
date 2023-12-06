@@ -1,5 +1,6 @@
 package com.ncsgroup.shipment.server.controller;
 
+import com.ncsgroup.shipment.server.dto.PageResponse;
 import com.ncsgroup.shipment.server.dto.ResponseGeneral;
 import com.ncsgroup.shipment.server.dto.shipment.ShipmentResponse;
 import com.ncsgroup.shipment.server.facade.ShipmentFacadeService;
@@ -76,4 +77,19 @@ public class ShipmentController {
           messageService.getMessage(DETAIL_SHIPMENT_SUCCESS, language),
           shipmentFacadeService.detail(id));
   }
+
+  @GetMapping
+  public ResponseGeneral<PageResponse<ShipmentResponse>> list(
+        @RequestParam(name = "keyword", required = false) String keyword,
+        @RequestParam(name = "size", defaultValue = "10") int size,
+        @RequestParam(name = "page", defaultValue = "0") int page,
+        @RequestParam(name = "all", defaultValue = "false", required = false) boolean isAll,
+        @RequestHeader(name = LANGUAGE, defaultValue = DEFAULT_LANGUAGE) String language
+  ) {
+    log.info("(list) keyword: {}, size : {}, page: {}, isAll: {}", keyword, size, page, isAll);
+    return ResponseGeneral.ofSuccess(messageService.getMessage(LIST_SHIPMENT_SUCCESS, language),
+          shipmentService.list(keyword, size, page, isAll)
+    );
+  }
+
 }
