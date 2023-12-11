@@ -28,10 +28,11 @@ public class ShipmentFacadeServiceImpl implements ShipmentFacadeService {
   public ShipmentResponse create(ShipmentRequest request) {
     log.info("(create) request: {}", request);
 
-    ShipmentResponse response = shipmentService.create(request);
     AddressResponse fromAddress = addressService.detail(request.getFromAddressId());
     AddressResponse toAddress = addressService.detail(request.getToAddressId());
     ShipmentMethodResponse shipmentMethod = shipmentMethodService.detail(request.getShipmentMethodId());
+
+    ShipmentResponse response = shipmentService.create(request);
 
     response.setFromAddress(fromAddress);
     response.setToAddress(toAddress);
@@ -45,10 +46,11 @@ public class ShipmentFacadeServiceImpl implements ShipmentFacadeService {
   public ShipmentResponse update(ShipmentRequest request, String id) {
     log.debug("(request) update, request: {}, id: {}", request, id);
 
-    ShipmentResponse response = shipmentService.update(request, id);
     AddressResponse fromAddress = addressService.detail(request.getFromAddressId());
     AddressResponse toAddress = addressService.detail(request.getToAddressId());
     ShipmentMethodResponse shipmentMethod = shipmentMethodService.detail(request.getShipmentMethodId());
+
+    ShipmentResponse response = shipmentService.update(request, id);
 
     response.setFromAddress(fromAddress);
     response.setToAddress(toAddress);
