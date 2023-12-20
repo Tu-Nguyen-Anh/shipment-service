@@ -53,7 +53,8 @@ public class ShipmentServiceTest {
           "toAddressId",
           20000.0,
           "shipmentMethodId",
-          false
+          false,
+          1
     );
     return shipment;
   }

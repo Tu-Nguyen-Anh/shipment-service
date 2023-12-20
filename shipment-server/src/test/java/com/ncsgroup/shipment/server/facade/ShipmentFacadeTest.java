@@ -86,19 +86,6 @@ public class ShipmentFacadeTest {
     return response;
   }
 
-  private Shipment mockShipment() {
-    Shipment shipment = new Shipment(
-          "SHIP01",
-          "orderId",
-          "fromAddressId",
-          "toAddressId",
-          20000.0,
-          "shipmentMethodId",
-          false
-    );
-    return shipment;
-  }
-
   private ShipmentResponse shipmentResponse() {
     ShipmentResponse response = new ShipmentResponse(
           "idShipment",

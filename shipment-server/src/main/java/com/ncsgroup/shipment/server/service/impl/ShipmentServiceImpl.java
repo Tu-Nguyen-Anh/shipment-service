@@ -34,6 +34,8 @@ public class ShipmentServiceImpl extends BaseServiceImpl<Shipment> implements Sh
           request.getPrice(),
           request.getShipmentMethodId()
     );
+    shipment.setNumber(findNextShipmentNumber());
+    shipment.setCode("SHIP_" + String.format("%07d", shipment.getNumber()));
     repository.saveAndFlush(shipment);
     return repository.find(shipment.getId());
   }
@@ -94,5 +96,9 @@ public class ShipmentServiceImpl extends BaseServiceImpl<Shipment> implements Sh
     shipment.setToAddressId(request.getToAddressId());
     shipment.setShipmentMethodId(request.getShipmentMethodId());
     shipment.setPrice(request.getPrice());
+  }
+  private int findNextShipmentNumber() {
+    Integer maxNumber = repository.findMaxShipmentNumber();
+    return maxNumber != null ? maxNumber + 1 : 1;
   }
 }
