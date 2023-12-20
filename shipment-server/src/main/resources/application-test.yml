@@ -5,11 +5,8 @@ spring:
         show_sql: true
   application:
     name: SHIPMENT_SERVICE
-  profiles:
-    active:
-      - dev
-      - dev-local
   datasource:
+    driver-class-name: org.h2.Driver
     url: jdbc:h2:mem:shop_sport
     username: sa
     password: password
