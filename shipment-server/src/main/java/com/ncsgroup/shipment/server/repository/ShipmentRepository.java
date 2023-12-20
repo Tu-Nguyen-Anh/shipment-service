@@ -42,5 +42,7 @@ public interface ShipmentRepository extends BaseRepository<Shipment> {
                AND s.isDeleted =false
        """)
   Page<ShipmentResponse> searchShipment(Pageable pageable, String keyword);
+  @Query(value = "SELECT MAX(number) FROM shipments", nativeQuery = true)
+  Integer findMaxShipmentNumber();
 
 }
