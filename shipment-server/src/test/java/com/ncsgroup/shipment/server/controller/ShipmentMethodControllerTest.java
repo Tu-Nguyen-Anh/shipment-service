@@ -33,7 +33,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @WebMvcTest(ShipmentMethodController.class)
-public class ShipmentMethodControllerTest {
+class ShipmentMethodControllerTest {
   @Autowired
   private MockMvc mockMvc;
   @MockBean
@@ -307,17 +307,17 @@ public class ShipmentMethodControllerTest {
           objectMapper.writeValueAsString(shipmentMethodController.detail(mockId, "en")));
   }
 
-@Test
-void testDetailShipmentMethod_WhenShipmentMethodNotFound_ReturnsShipmentMethodNotFoundException() throws Exception {
-  Mockito.when(shipmentMethodService.detail(mockId)).thenThrow(new ShipmentMethodNotFoundException());
-  Mockito.when(messageService.getMessage(DETAIL_SHIPMENT_METHOD, "en")).thenReturn("Get detail shipment method success");
+  @Test
+  void testDetailShipmentMethod_WhenShipmentMethodNotFound_ReturnsShipmentMethodNotFoundException() throws Exception {
+    Mockito.when(shipmentMethodService.detail(mockId)).thenThrow(new ShipmentMethodNotFoundException());
+    Mockito.when(messageService.getMessage(DETAIL_SHIPMENT_METHOD, "en")).thenReturn("Get detail shipment method success");
 
-  mockMvc.perform(
-              get("/api/v1/shipment-methods/{id}", mockId))
-        .andExpect(status().isNotFound())
-        .andExpect(jsonPath("$.data.code")
-              .value("com.ncsgroup.shipment.server.exception.shipmentmethod.ShipmentMethodNotFoundException"));
-}
+    mockMvc.perform(
+                get("/api/v1/shipment-methods/{id}", mockId))
+          .andExpect(status().isNotFound())
+          .andExpect(jsonPath("$.data.code")
+                .value("com.ncsgroup.shipment.server.exception.shipmentmethod.ShipmentMethodNotFoundException"));
+  }
 
 }
 

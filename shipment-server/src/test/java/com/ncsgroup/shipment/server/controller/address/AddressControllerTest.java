@@ -28,7 +28,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @WebMvcTest(AddressController.class)
-public class AddressControllerTest {
+class AddressControllerTest {
   @Autowired
   private MockMvc mockMvc;
   @MockBean
@@ -92,7 +92,7 @@ public class AddressControllerTest {
   }
 
   @Test
-  public void testCreate_WhenCreateSuccess_Return201Body() throws Exception {
+  void testCreate_WhenCreateSuccess_Return201Body() throws Exception {
     AddressRequest addressRequest = mockAddressRequest();
     AddressResponse addressResponse = mockFacadeResponse();
     Mockito.when(addressFacadeService.createAddress(addressRequest)).thenReturn(addressResponse);
@@ -113,7 +113,7 @@ public class AddressControllerTest {
   }
 
   @Test
-  public void testCreate_WhenProvinceCodeNotFound_Return404ProvinceNotFound() throws Exception {
+  void testCreate_WhenProvinceCodeNotFound_Return404ProvinceNotFound() throws Exception {
     AddressRequest addressRequest = mockAddressRequest();
     mockFacadeResponse();
     Mockito.when(addressFacadeService.createAddress(addressRequest)).
@@ -130,7 +130,7 @@ public class AddressControllerTest {
   }
 
   @Test
-  public void testCreate_WhenDistrictCodeNotFound_Return404DistrictNotFound() throws Exception {
+  void testCreate_WhenDistrictCodeNotFound_Return404DistrictNotFound() throws Exception {
     AddressRequest addressRequest = mockAddressRequest();
     mockFacadeResponse();
     Mockito.when(addressFacadeService.createAddress(addressRequest)).
@@ -147,7 +147,7 @@ public class AddressControllerTest {
   }
 
   @Test
-  public void testCreate_WhenWardCodeNotFound_Return404WardNotFound() throws Exception {
+  void testCreate_WhenWardCodeNotFound_Return404WardNotFound() throws Exception {
     AddressRequest addressRequest = mockAddressRequest();
     Mockito.when(addressFacadeService.createAddress(addressRequest)).
           thenThrow(new AddressNotFoundException(false, false, true));
@@ -163,7 +163,7 @@ public class AddressControllerTest {
   }
 
   @Test
-  public void testList_WhenIsAll_ReturnResponseBody() throws Exception {
+  void testList_WhenIsAll_ReturnResponseBody() throws Exception {
     AddressResponse addressResponse = mockAddressResponse();
     List<AddressResponse> list = new ArrayList<>();
     list.add(addressResponse);
@@ -188,7 +188,7 @@ public class AddressControllerTest {
   }
 
   @Test
-  public void testList_WhenSearchByKeyWord_ReturnResponseBody() throws Exception {
+  void testList_WhenSearchByKeyWord_ReturnResponseBody() throws Exception {
     AddressResponse addressResponse = mockAddressResponse();
     List<AddressResponse> list = new ArrayList<>();
     list.add(addressResponse);
@@ -213,7 +213,7 @@ public class AddressControllerTest {
   }
 
   @Test
-  public void testDetail_WhenIdNotFound_Return404AddressNotFound() throws Exception {
+  void testDetail_WhenIdNotFound_Return404AddressNotFound() throws Exception {
     Mockito.when(addressService.detail(mockId)).thenThrow(new AddressNotFoundException());
     mockMvc.perform(
                 get("/api/v1/addresses/{id}", mockId))
@@ -224,7 +224,7 @@ public class AddressControllerTest {
   }
 
   @Test
-  public void testDetail_WhenSuccess_Return200ResponseBody() throws Exception {
+  void testDetail_WhenSuccess_Return200ResponseBody() throws Exception {
     AddressResponse response = addressResponse();
     Mockito.when(addressService.detail(mockId)).thenReturn(response);
     Mockito.when(messageService.getMessage(DETAIL_ADDRESS, "en")).thenReturn("Get Detail Address Success");
@@ -239,7 +239,7 @@ public class AddressControllerTest {
   }
 
   @Test
-  public void testUpdate_WhenUpdateSuccess_Return201Body() throws Exception {
+  void testUpdate_WhenUpdateSuccess_Return201Body() throws Exception {
     AddressRequest addressRequest = mockAddressRequest();
     AddressResponse addressResponse = mockFacadeResponse();
     Mockito.when(addressFacadeService.updateAddress(addressRequest, mockId)).thenReturn(addressResponse);
@@ -260,7 +260,7 @@ public class AddressControllerTest {
   }
 
   @Test
-  public void testUpdate_WhenProvinceCodeNotFound_Return404ProvinceNotFound() throws Exception {
+  void testUpdate_WhenProvinceCodeNotFound_Return404ProvinceNotFound() throws Exception {
     AddressRequest addressRequest = mockAddressRequest();
     mockFacadeResponse();
     Mockito.when(addressFacadeService.updateAddress(addressRequest, mockId)).
@@ -277,7 +277,7 @@ public class AddressControllerTest {
   }
 
   @Test
-  public void testUpdate_WhenDistrictCodeNotFound_Return404ProvinceNotFound() throws Exception {
+  void testUpdate_WhenDistrictCodeNotFound_Return404ProvinceNotFound() throws Exception {
     AddressRequest addressRequest = mockAddressRequest();
     mockFacadeResponse();
     Mockito.when(addressFacadeService.updateAddress(addressRequest, mockId)).
@@ -294,7 +294,7 @@ public class AddressControllerTest {
   }
 
   @Test
-  public void testUpdate_WhenWardCodeNotFound_Return404ProvinceNotFound() throws Exception {
+  void testUpdate_WhenWardCodeNotFound_Return404ProvinceNotFound() throws Exception {
     AddressRequest addressRequest = mockAddressRequest();
     mockFacadeResponse();
     Mockito.when(addressFacadeService.updateAddress(addressRequest, mockId)).
@@ -311,7 +311,7 @@ public class AddressControllerTest {
   }
 
   @Test
-  public void testDelete_WhenAddressNotFound_ReturnAddressNotFound() throws Exception {
+  void testDelete_WhenAddressNotFound_ReturnAddressNotFound() throws Exception {
     Mockito.doThrow(new AddressNotFoundException()).when(addressService).delete(mockId);
     mockMvc.perform(
                 delete("/api/v1/addresses/{id}", mockId))
@@ -323,7 +323,7 @@ public class AddressControllerTest {
   }
 
   @Test
-  public void testDelete_WhenSuccess_ReturnMessageSuccess() throws Exception {
+  void testDelete_WhenSuccess_ReturnMessageSuccess() throws Exception {
     Mockito.doNothing().when(addressService).delete(mockId);
     Mockito.when(messageService.getMessage(DELETE_ADDRESS, "en")).thenReturn("Delete successfully");
     mockMvc.perform(

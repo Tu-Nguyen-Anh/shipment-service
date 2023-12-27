@@ -21,9 +21,11 @@ import org.springframework.test.context.ContextConfiguration;
 import java.util.ArrayList;
 import java.util.List;
 
+import static org.assertj.core.api.AssertionsForInterfaceTypes.assertThat;
+
 @WebMvcTest(WardService.class)
 @ContextConfiguration(classes = ShipmentTestConfiguration.class)
-public class WardServiceTest {
+class WardServiceTest {
   @MockBean
   private WardRepository repository;
   @Autowired
@@ -76,9 +78,8 @@ public class WardServiceTest {
     Mockito.when(repository.count("293")).thenReturn(list.size());
 
     WardPageResponse response = wardService.search(mockSearch, 10, 0, true);
-    Assertions.assertThat(list.size()).isEqualTo(response.getCount());
+    assertThat(list).hasSize(response.getCount());
   }
-
   @Test
   void testList_WhenAllTrue_ReturnWardPageResponse() {
     Ward mockEntity = mockWard();
@@ -90,7 +91,7 @@ public class WardServiceTest {
     Mockito.when(repository.count((String) null)).thenReturn(list.size());
 
     WardPageResponse response = wardService.search(null, 10, 0, true);
-    Assertions.assertThat(list.size()).isEqualTo(response.getCount());
+    assertThat(list).hasSize(response.getCount());
   }
 
   @Test
@@ -106,8 +107,8 @@ public class WardServiceTest {
     Mockito.when(repository.search("tam_ky", "293", pageable)).thenReturn(list);
 
     WardPageResponse response = wardService.search(mockSearch, 5, 0, false);
-    Assertions.assertThat(list.size()).isEqualTo(response.getCount());
-    Assertions.assertThat(list.size()).isEqualTo(response.getWardResponses().size());
+    assertThat(list).hasSize(response.getCount());
+    assertThat(list).hasSameSizeAs(response.getWardResponses());
   }
 
   @Test

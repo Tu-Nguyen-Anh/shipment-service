@@ -23,9 +23,11 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+import static org.assertj.core.api.AssertionsForInterfaceTypes.assertThat;
+
 @WebMvcTest(AddressServiceTest.class)
 @ContextConfiguration(classes = ShipmentTestConfiguration.class)
-public class AddressServiceTest {
+class AddressServiceTest {
   @Autowired
   private AddressService addressService;
   @MockBean
@@ -71,7 +73,7 @@ public class AddressServiceTest {
   }
 
   @Test
-  public void testCreate_WhenCreateSuccess_ReturnAddressResponse() throws Exception {
+  void testCreate_WhenCreateSuccess_ReturnAddressResponse() throws Exception {
     AddressRequest mockRequest = mockRequest();
     AddressResponse addressResponse = mockAddressResponse();
     Address mockEntity = mockEntity();
@@ -89,7 +91,7 @@ public class AddressServiceTest {
   }
 
   @Test
-  public void testList_WhenIsAll_ReturnResponseBody() throws Exception {
+  void testList_WhenIsAll_ReturnResponseBody() throws Exception {
     AddressResponse addressResponse = mockResponse();
     Pageable pageable = PageRequest.of(0, 10);
     List<AddressResponse> list = new ArrayList<>();
@@ -100,11 +102,12 @@ public class AddressServiceTest {
     Mockito.when(repository.findAllAddress(pageable)).thenReturn(mockPage);
 
     PageResponse<AddressResponse> response = addressService.list(null, 10, 0, true);
-    Assertions.assertThat(list.size()).isEqualTo(response.getAmount());
+    assertThat(list).hasSize(response.getAmount());
+
   }
 
   @Test
-  public void testList_WhenSearchByKeyWord_ReturnResponseBody() throws Exception {
+  void testList_WhenSearchByKeyWord_ReturnResponseBody() throws Exception {
     AddressResponse addressResponse = mockResponse();
     Pageable pageable = PageRequest.of(0, 10);
     List<AddressResponse> list = new ArrayList<>();
@@ -115,18 +118,18 @@ public class AddressServiceTest {
     Mockito.when(repository.search(pageable, "Tam Ky")).thenReturn(mockPage);
 
     PageResponse<AddressResponse> response = addressService.list("Tam Ky", 10, 0, false);
-    Assertions.assertThat(list.size()).isEqualTo(response.getAmount());
+    assertThat(list).hasSize(response.getAmount());
   }
 
   @Test
-  public void testDetail_WhenIdNotFound_Return404AddressNotFound() throws Exception {
+  void testDetail_WhenIdNotFound_Return404AddressNotFound() throws Exception {
     Mockito.when(repository.existsById(mockId)).thenReturn(false);
 
     Assertions.assertThatThrownBy(() -> addressService.detail(mockId)).isInstanceOf(AddressNotFoundException.class);
   }
 
   @Test
-  public void testDetail_WhenCreateSuccess_ReturnAddressResponse() throws Exception {
+  void testDetail_WhenCreateSuccess_ReturnAddressResponse() throws Exception {
     AddressResponse addressResponse = mockAddressResponse();
 
     Mockito.when(repository.findAddressById(mockId)).thenReturn(addressResponse);
@@ -141,7 +144,7 @@ public class AddressServiceTest {
   }
 
   @Test
-  public void testUpdate_WhenIdAddressNotFound_ReturnAddressNotFound() throws Exception {
+  void testUpdate_WhenIdAddressNotFound_ReturnAddressNotFound() throws Exception {
     AddressRequest request = mockRequest();
     Mockito.when(repository.findById(mockId)).thenThrow(AddressNotFoundException.class);
 
@@ -149,7 +152,7 @@ public class AddressServiceTest {
   }
 
   @Test
-  public void testUpdate_WhenUpdateSuccess_ReturnAddressResponse() throws Exception {
+  void testUpdate_WhenUpdateSuccess_ReturnAddressResponse() throws Exception {
     AddressRequest mockRequest = mockRequest();
     AddressResponse mockResponse = mockResponse();
     mockResponse.setId(mockId);
@@ -168,10 +171,11 @@ public class AddressServiceTest {
     Assertions.assertThat(response.getWards()).isEqualTo(mockResponse.getWards());
     Assertions.assertThat(response.getDetail()).isEqualTo(mockResponse.getDetail());
   }
+
   @Test
-  public void testDelete_WhenIdNotFound_ReturnAddressNotFound() throws Exception{
+  void testDelete_WhenIdNotFound_ReturnAddressNotFound() throws Exception {
     Mockito.when(repository.findById(mockId)).thenThrow(AddressNotFoundException.class);
 
-    Assertions.assertThatThrownBy(()->addressService.delete(mockId)).isInstanceOf(AddressNotFoundException.class);
+    Assertions.assertThatThrownBy(() -> addressService.delete(mockId)).isInstanceOf(AddressNotFoundException.class);
   }
 }

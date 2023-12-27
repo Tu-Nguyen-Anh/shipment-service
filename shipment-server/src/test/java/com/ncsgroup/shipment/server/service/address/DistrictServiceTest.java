@@ -21,9 +21,11 @@ import org.springframework.test.context.ContextConfiguration;
 import java.util.ArrayList;
 import java.util.List;
 
+import static org.assertj.core.api.AssertionsForInterfaceTypes.assertThat;
+
 @WebMvcTest(DistrictService.class)
 @ContextConfiguration(classes = ShipmentTestConfiguration.class)
-public class DistrictServiceTest {
+class DistrictServiceTest {
   @MockBean
   private DistrictRepository repository;
   @Autowired
@@ -91,7 +93,8 @@ public class DistrictServiceTest {
     Mockito.when(repository.count("30")).thenReturn(list.size());
 
     DistrictPageResponse response = districtService.search(mockSearch, 10, 0, true);
-    Assertions.assertThat(list.size()).isEqualTo(response.getCount());
+    assertThat(list).hasSize(response.getCount());
+
   }
 
   @Test
@@ -108,7 +111,7 @@ public class DistrictServiceTest {
     Mockito.when(repository.count((String) null)).thenReturn(list.size());
 
     DistrictPageResponse response = districtService.search(null, 10, 0, true);
-    Assertions.assertThat(list.size()).isEqualTo(response.getCount());
+    assertThat(list).hasSize(response.getCount());
   }
 
   @Test
@@ -127,8 +130,8 @@ public class DistrictServiceTest {
     Mockito.when(repository.search("kim_thanh", "30", pageable)).thenReturn(list);
 
     DistrictPageResponse response = districtService.search(mockSearch, 5, 0, false);
-    Assertions.assertThat(list.size()).isEqualTo(response.getCount());
-    Assertions.assertThat(list.size()).isEqualTo(response.getDistrictsResponse().size());
+    assertThat(list).hasSize(response.getCount());
+    assertThat(list).hasSameSizeAs(response.getDistrictsResponse());
   }
 
   @Test

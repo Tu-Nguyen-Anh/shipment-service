@@ -2,6 +2,7 @@ package com.ncsgroup.shipment.client.constants;
 
 public class Constants {
   public static class Validate {
+    public Validate(){}
     public static final String NAME_BLANK = "com.ncsgroup.shipment.client.dto.name.NotNull";
     public static final String PRICE_BLANK = "com.ncsgroup.shipment.client.dto.pricePerKilometer.NotNull";
     public static final String DESCRIPTION_BLANK = "com.ncsgroup.shipment.client.dto.description.NotNull";
