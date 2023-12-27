@@ -35,7 +35,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @WebMvcTest(ShipmentController.class)
-public class ShipmentControllerTest {
+class ShipmentControllerTest {
   @Autowired
   private MockMvc mockMvc;
   @MockBean
@@ -277,6 +277,7 @@ public class ShipmentControllerTest {
     Assertions.assertEquals(responseBody,
           objectMapper.writeValueAsString(shipmentController.list("", 10, 0, true, "en")));
   }
+
   @Test
   void testListShipment_WhenSearchByKeyword_Return200Body() throws Exception {
     ShipmentResponse shipmentResponse = shipmentResponse();

@@ -19,9 +19,11 @@ import org.mockito.Mockito;
 import java.util.ArrayList;
 import java.util.List;
 
+import static org.assertj.core.api.AssertionsForInterfaceTypes.assertThat;
+
 @WebMvcTest(ProvinceService.class)
 @ContextConfiguration(classes = ShipmentTestConfiguration.class)
-public class ProvinceServiceTest {
+class ProvinceServiceTest {
   @MockBean
   private ProvinceRepository repository;
   @Autowired
@@ -62,7 +64,7 @@ public class ProvinceServiceTest {
     list.add(mockProvince02);
     Mockito.when(repository.findAll()).thenReturn(list);
     ProvincePageResponse response = provinceService.list(null, 5, 0, true);
-    Assertions.assertThat(list.size()).isEqualTo(response.getCount());
+    assertThat(list).hasSize(response.getCount());
   }
 
   @Test
@@ -76,8 +78,8 @@ public class ProvinceServiceTest {
     Mockito.when(repository.search("ha_noi", pageable)).thenReturn(list);
     Mockito.when(repository.countSearch("ha_noi")).thenReturn(list.size());
     ProvincePageResponse response = provinceService.list("ha_noi", 5, 0, false);
-    Assertions.assertThat(list.size()).isEqualTo(response.getCount());
-    Assertions.assertThat(list.size()).isEqualTo(response.getProvinceResponses().size());
+    assertThat(list).hasSize(response.getCount());
+    assertThat(list).hasSameSizeAs(response.getProvinceResponses());
   }
 
   @Test

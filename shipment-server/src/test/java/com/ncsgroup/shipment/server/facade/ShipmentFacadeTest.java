@@ -4,7 +4,6 @@ import com.ncsgroup.shipment.server.configuration.ShipmentTestConfiguration;
 import com.ncsgroup.shipment.server.dto.address.AddressResponse;
 import com.ncsgroup.shipment.server.dto.shipment.ShipmentResponse;
 import com.ncsgroup.shipment.server.dto.shipmentmethod.ShipmentMethodResponse;
-import com.ncsgroup.shipment.server.entity.Shipment;
 import com.ncsgroup.shipment.server.exception.address.AddressNotFoundException;
 import com.ncsgroup.shipment.server.exception.shipmentmethod.ShipmentMethodNotFoundException;
 import com.ncsgroup.shipment.server.service.ShipmentMethodService;
@@ -21,7 +20,7 @@ import org.springframework.test.context.ContextConfiguration;
 
 @WebMvcTest(ShipmentFacadeService.class)
 @ContextConfiguration(classes = ShipmentTestConfiguration.class)
-public class ShipmentFacadeTest {
+class ShipmentFacadeTest {
   @MockBean
   private ShipmentService shipmentService;
   @MockBean
@@ -69,21 +68,6 @@ public class ShipmentFacadeTest {
     addressResponse.setWards("10081");
     addressResponse.setDetail("Tam Ky Kim Thanh Hai Duong");
     return addressResponse;
-  }
-
-  private ShipmentResponse mockShipmentResponse() {
-    ShipmentMethodResponse shipmentMethodResponse = mockShipmentMethodResponse();
-    AddressResponse fromAddress = mockFromAddressResponse();
-    AddressResponse toAddress = mockToAddressResponse();
-    ShipmentResponse response = new ShipmentResponse(
-          "idShipment",
-          "SHIP01",
-          20000.0,
-          shipmentMethodResponse,
-          fromAddress,
-          toAddress
-    );
-    return response;
   }
 
   private ShipmentResponse shipmentResponse() {
