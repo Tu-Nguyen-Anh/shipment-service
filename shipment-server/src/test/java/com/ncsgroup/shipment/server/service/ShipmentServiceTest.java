@@ -2,16 +2,13 @@ package com.ncsgroup.shipment.server.service;
 
 import com.ncsgroup.shipment.server.configuration.ShipmentTestConfiguration;
 import com.ncsgroup.shipment.server.dto.PageResponse;
-import com.ncsgroup.shipment.server.dto.address.AddressResponse;
 import com.ncsgroup.shipment.server.dto.shipment.ShipmentResponse;
-import com.ncsgroup.shipment.server.dto.shipmentmethod.ShipmentMethodResponse;
 import com.ncsgroup.shipment.server.entity.Shipment;
 import com.ncsgroup.shipment.server.exception.shipmentmethod.ShipmentMethodNotFoundException;
 import com.ncsgroup.shipment.server.repository.ShipmentRepository;
 import com.ncsgroup.shipment.client.dto.ShipmentRequest;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
@@ -26,9 +23,11 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+import static org.assertj.core.api.AssertionsForInterfaceTypes.assertThat;
+
 @WebMvcTest(ShipmentService.class)
 @ContextConfiguration(classes = ShipmentTestConfiguration.class)
-public class ShipmentServiceTest {
+class ShipmentServiceTest {
   @MockBean
   private ShipmentRepository repository;
   @Autowired
@@ -136,7 +135,7 @@ public class ShipmentServiceTest {
     Page<ShipmentResponse> page = new PageImpl<>(list);
     Mockito.when(repository.findAllShipment(pageable)).thenReturn(page);
     PageResponse<ShipmentResponse> response = shipmentService.list(null, 10, 0, true);
-    Assertions.assertThat(response.getAmount()).isEqualTo(list.size());
+    assertThat(list).hasSize(response.getAmount());
   }
 
   @Test
@@ -146,8 +145,8 @@ public class ShipmentServiceTest {
     list.add(mockResponse);
     Pageable pageable = PageRequest.of(0, 10);
     Page<ShipmentResponse> page = new PageImpl<>(list);
-    Mockito.when(repository.searchShipment(pageable,"SHIP01")).thenReturn(page);
+    Mockito.when(repository.searchShipment(pageable, "SHIP01")).thenReturn(page);
     PageResponse<ShipmentResponse> response = shipmentService.list("SHIP01", 10, 0, false);
-    Assertions.assertThat(response.getAmount()).isEqualTo(list.size());
+    assertThat(list).hasSize(response.getAmount());
   }
 }

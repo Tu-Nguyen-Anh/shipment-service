@@ -24,9 +24,11 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+import static org.assertj.core.api.AssertionsForInterfaceTypes.assertThat;
+
 @WebMvcTest(ShipmentMethodService.class)
 @ContextConfiguration(classes = ShipmentTestConfiguration.class)
-public class ShipmentMethodServiceTest {
+class ShipmentMethodServiceTest {
   @MockBean
   private ShipmentMethodRepository repository;
   @Autowired
@@ -137,7 +139,7 @@ public class ShipmentMethodServiceTest {
     Mockito.when(repository.findAllShipmentMethod(pageable)).thenReturn(mockPage);
 
     PageResponse<ShipmentMethodResponse> response = shipmentMethodService.list(null, 10, 0, true);
-    Assertions.assertThat(response.getAmount()).isEqualTo(list.size());
+    assertThat(list).hasSize(response.getAmount());
   }
 
   @Test
@@ -151,7 +153,7 @@ public class ShipmentMethodServiceTest {
     Mockito.when(repository.search("Giao Hang", pageable)).thenReturn(mockPage);
 
     PageResponse<ShipmentMethodResponse> response = shipmentMethodService.list("Giao Hang", 10, 0, false);
-    Assertions.assertThat(response.getAmount()).isEqualTo(list.size());
+    assertThat(list).hasSize(response.getAmount());
   }
 
 
