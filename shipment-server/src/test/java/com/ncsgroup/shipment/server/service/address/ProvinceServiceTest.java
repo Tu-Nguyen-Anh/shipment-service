@@ -77,6 +77,7 @@ class ProvinceServiceTest {
 
     Mockito.when(repository.search(pageable, "ha_noi")).thenReturn(page);
     Mockito.when(repository.countSearch("ha_noi")).thenReturn(list.size());
+
     PageResponse<ProvinceResponse> response = provinceService.list("ha_noi", 10, 0, false);
     assertThat(list).hasSize(response.getAmount());
   }
