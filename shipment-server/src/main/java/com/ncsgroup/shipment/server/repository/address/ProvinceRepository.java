@@ -43,15 +43,4 @@ public interface ProvinceRepository extends BaseRepository<Province> {
         FROM Province p
         """)
   Page<ProvinceResponse> findAllProvinces(Pageable pageable);
-
-  @Query("SELECT count(DISTINCT p.code) " +
-         "FROM Province p " +
-         "WHERE :keyword is null " +
-         "or lower(p.name) LIKE lower(concat('%', :keyword, '%'))" +
-         "or lower(p.nameEn) LIKE lower(concat('%', :keyword, '%'))" +
-         "or lower(p.fullName) LIKE lower(concat('%', :keyword, '%'))" +
-         "or lower(p.fullNameEn) LIKE lower(concat('%', :keyword, '%'))" +
-         "or lower(p.codeName) LIKE lower(concat('%', :keyword, '%'))")
-  int countSearch(String keyword);
-
 }
