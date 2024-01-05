@@ -1,9 +1,9 @@
 package com.ncsgroup.shipment.server.service.address;
 
 import com.ncsgroup.shipment.server.configuration.ShipmentTestConfiguration;
+import com.ncsgroup.shipment.server.dto.PageResponse;
 import com.ncsgroup.shipment.server.dto.address.province.ProvinceInfoResponse;
-import com.ncsgroup.shipment.server.dto.address.province.ProvincePageResponse;
-import com.ncsgroup.shipment.server.entity.address.Province;
+import com.ncsgroup.shipment.server.dto.address.province.ProvinceResponse;
 import com.ncsgroup.shipment.server.exception.address.AddressNotFoundException;
 import com.ncsgroup.shipment.server.repository.address.ProvinceRepository;
 import org.assertj.core.api.Assertions;
@@ -11,6 +11,8 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.test.context.ContextConfiguration;
@@ -29,57 +31,54 @@ class ProvinceServiceTest {
   @Autowired
   private ProvinceService provinceService;
 
-  private Province mockProvince01() {
-    Province mockEntity = new Province();
-    mockEntity.setCode("01");
-    mockEntity.setName("Ha Noi");
-    mockEntity.setNameEn("Ha Noi");
-    mockEntity.setFullName("Thanh Pho Ha Noi");
-    mockEntity.setFullNameEn("Ha Noi City");
-    mockEntity.setCodeName("ha_noi");
-    return mockEntity;
+  private ProvinceResponse mockProvinceResponse() {
+    ProvinceResponse mockResponse = new ProvinceResponse();
+    mockResponse.setCode("02");
+    mockResponse.setName("Hai Duong");
+    mockResponse.setNameEn("Ha Duong");
+    mockResponse.setFullName("Tinh Hai Duong");
+    mockResponse.setFullNameEn("Hai Duong Province");
+    mockResponse.setCodeName("hai_duong");
+    return mockResponse;
   }
 
-  private Province mockProvince02() {
-    Province mockEntity = new Province();
-    mockEntity.setCode("02");
-    mockEntity.setName("Hai Duong");
-    mockEntity.setNameEn("Ha Duong");
-    mockEntity.setFullName("Tinh Hai Duong");
-    mockEntity.setFullNameEn("Hai Duong Province");
-    mockEntity.setCodeName("hai_duong");
-    return mockEntity;
-  }
-
-  private ProvinceInfoResponse mockProvinceInfo(Province province) {
-    return new ProvinceInfoResponse(province.getName(), province.getNameEn(), province.getCodeName(), province.getCode());
+  private ProvinceInfoResponse mockProvinceInfo() {
+    ProvinceInfoResponse mockProvinceResponse = new ProvinceInfoResponse();
+    mockProvinceResponse.setCode("02");
+    mockProvinceResponse.setProvinceName("Hai Duong");
+    mockProvinceResponse.setProvinceNameEn("Hai Duong");
+    mockProvinceResponse.setProvinceCodeName("hai_duong");
+    return mockProvinceResponse;
   }
 
   @Test
   void testList_WhenAllTrue_ReturnProvincePageResponse() {
-    Province mockProvince01 = mockProvince01();
-    Province mockProvince02 = mockProvince02();
-    List<Province> list = new ArrayList<>();
-    list.add(mockProvince01);
-    list.add(mockProvince02);
-    Mockito.when(repository.findAll()).thenReturn(list);
-    ProvincePageResponse response = provinceService.list(null, 5, 0, true);
-    assertThat(list).hasSize(response.getCount());
+    Pageable pageable = PageRequest.of(0, 10);
+    ProvinceResponse mockResponse = mockProvinceResponse();
+
+    List<ProvinceResponse> list = new ArrayList<>();
+    list.add(mockResponse);
+
+    Page<ProvinceResponse> page = new PageImpl<>(list);
+    Mockito.when(repository.findAllProvinces(pageable)).thenReturn(page);
+    PageResponse<ProvinceResponse> response = provinceService.list(null, 10, 0, true);
+    assertThat(list).hasSize(response.getAmount());
   }
 
   @Test
   void testList_WhenAllFalse_ReturnProvincePageResponse() {
-    Pageable pageable = PageRequest.of(0, 5);
-    Province mockProvince01 = mockProvince01();
-    Province mockProvince02 = mockProvince02();
-    List<Province> list = new ArrayList<>();
-    list.add(mockProvince01);
-    list.add(mockProvince02);
-    Mockito.when(repository.search("ha_noi", pageable)).thenReturn(list);
+    Pageable pageable = PageRequest.of(0, 10);
+    ProvinceResponse mockResponse = mockProvinceResponse();
+
+    List<ProvinceResponse> list = new ArrayList<>();
+    list.add(mockResponse);
+
+    Page<ProvinceResponse> page = new PageImpl<>(list);
+
+    Mockito.when(repository.search(pageable, "ha_noi")).thenReturn(page);
     Mockito.when(repository.countSearch("ha_noi")).thenReturn(list.size());
-    ProvincePageResponse response = provinceService.list("ha_noi", 5, 0, false);
-    assertThat(list).hasSize(response.getCount());
-    assertThat(list).hasSameSizeAs(response.getProvinceResponses());
+    PageResponse<ProvinceResponse> response = provinceService.list("ha_noi", 10, 0, false);
+    assertThat(list).hasSize(response.getAmount());
   }
 
   @Test
@@ -90,14 +89,14 @@ class ProvinceServiceTest {
 
   @Test
   void testDetail_WhenGetSuccess_ReturnResponseBody() {
-    Province mockEntity = mockProvince01();
-    ProvinceInfoResponse provinceInfo = mockProvinceInfo(mockEntity);
+    ProvinceInfoResponse provinceInfo = mockProvinceInfo();
     Mockito.when(repository.existsByCode("01")).thenReturn(true);
     Mockito.when(repository.getByCode("01")).thenReturn(provinceInfo);
+
     ProvinceInfoResponse response = provinceService.detail("01");
-    Assertions.assertThat(mockEntity.getName()).isEqualTo(response.getProvinceName());
-    Assertions.assertThat(mockEntity.getNameEn()).isEqualTo(response.getProvinceNameEn());
-    Assertions.assertThat(mockEntity.getCodeName()).isEqualTo(response.getProvinceCodeName());
-    Assertions.assertThat(mockEntity.getCode()).isEqualTo(response.getCode());
+    Assertions.assertThat(provinceInfo.getProvinceName()).isEqualTo(response.getProvinceName());
+    Assertions.assertThat(provinceInfo.getProvinceNameEn()).isEqualTo(response.getProvinceNameEn());
+    Assertions.assertThat(provinceInfo.getProvinceCodeName()).isEqualTo(response.getProvinceCodeName());
+    Assertions.assertThat(provinceInfo.getCode()).isEqualTo(response.getCode());
   }
 }
