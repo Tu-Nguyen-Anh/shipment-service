@@ -1,8 +1,8 @@
 package com.ncsgroup.shipment.server.service.address;
 
 import com.ncsgroup.shipment.server.configuration.ShipmentTestConfiguration;
+import com.ncsgroup.shipment.server.dto.PageResponse;
 import com.ncsgroup.shipment.server.dto.address.district.DistrictInfoResponse;
-import com.ncsgroup.shipment.server.dto.address.district.DistrictPageResponse;
 import com.ncsgroup.shipment.server.dto.address.district.DistrictResponse;
 import com.ncsgroup.shipment.server.entity.address.District;
 import com.ncsgroup.shipment.server.exception.address.AddressNotFoundException;
@@ -14,6 +14,8 @@ import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.test.context.ContextConfiguration;
@@ -40,18 +42,6 @@ class DistrictServiceTest {
     mockEntity.setFullNameEn("Kim Thanh District");
     mockEntity.setCodeName("kim_thanh");
     mockEntity.setProvinceCode("30");
-    return mockEntity;
-  }
-
-  private District mockDistrict1() {
-    District mockEntity = new District();
-    mockEntity.setCode("294");
-    mockEntity.setName("Kinh Mon");
-    mockEntity.setNameEn("Kinh Mon");
-    mockEntity.setFullName("Thi xa Kinh Mon");
-    mockEntity.setFullNameEn("Kinh Mon tow");
-    mockEntity.setCodeName("kinh_mon");
-    mockEntity.setProvinceCode("31");
     return mockEntity;
   }
 
@@ -82,56 +72,50 @@ class DistrictServiceTest {
   void testList_WhenAllFalseAndExistProvinceCode_ReturnDistrictPageResponse() {
     SearchDistrictRequest mockSearch = mockSearchRequest(null, "30");
     District mockEntity = mockDistrict();
-    District mockEntity1 = mockDistrict1();
+
     DistrictResponse mockResponse = mockDistrictResponse(mockEntity);
-    DistrictResponse mockResponse1 = mockDistrictResponse(mockEntity1);
     List<DistrictResponse> list = new ArrayList<>();
     list.add(mockResponse);
-    list.add(mockResponse1);
 
-    Mockito.when(repository.list("30")).thenReturn(list);
-    Mockito.when(repository.count("30")).thenReturn(list.size());
+    Page<DistrictResponse> page = new PageImpl<>(list);
+    Pageable pageable = PageRequest.of(0,10);
+    Mockito.when(repository.searchDistrict(null,"30",pageable)).thenReturn(page);
 
-    DistrictPageResponse response = districtService.search(mockSearch, 10, 0, true);
-    assertThat(list).hasSize(response.getCount());
-
+    PageResponse<DistrictResponse> response = districtService.search(mockSearch, 10, 0, false);
+    assertThat(list).hasSize(response.getAmount());
   }
 
   @Test
   void testList_WhenAllTrue_ReturnDistrictPageResponse() {
     District mockEntity = mockDistrict();
-    District mockEntity1 = mockDistrict1();
+
     DistrictResponse mockResponse = mockDistrictResponse(mockEntity);
-    DistrictResponse mockResponse1 = mockDistrictResponse(mockEntity1);
     List<DistrictResponse> list = new ArrayList<>();
     list.add(mockResponse);
-    list.add(mockResponse1);
 
-    Mockito.when(repository.list(null)).thenReturn(list);
-    Mockito.when(repository.count((String) null)).thenReturn(list.size());
+    Page<DistrictResponse> page = new PageImpl<>(list);
+    Pageable pageable = PageRequest.of(0,10);
+    Mockito.when(repository.findAllDistrict(null,pageable)).thenReturn(page);
 
-    DistrictPageResponse response = districtService.search(null, 10, 0, true);
-    assertThat(list).hasSize(response.getCount());
+    PageResponse<DistrictResponse> response = districtService.search(null, 10, 0, true);
+    assertThat(list).hasSize(response.getAmount());
   }
 
   @Test
   void testList_WhenAllFalse_ReturnDistrictPageResponse() {
-    Pageable pageable = PageRequest.of(0, 5);
+    SearchDistrictRequest mockSearch = mockSearchRequest("kim_thanh", "40");
     District mockEntity = mockDistrict();
-    District mockEntity1 = mockDistrict1();
-    SearchDistrictRequest mockSearch = mockSearchRequest("kim_thanh", "30");
+
     DistrictResponse mockResponse = mockDistrictResponse(mockEntity);
-    DistrictResponse mockResponse1 = mockDistrictResponse(mockEntity1);
     List<DistrictResponse> list = new ArrayList<>();
     list.add(mockResponse);
-    list.add(mockResponse1);
 
-    Mockito.when(repository.countSearch("kim_thanh", "30")).thenReturn(list.size());
-    Mockito.when(repository.search("kim_thanh", "30", pageable)).thenReturn(list);
+    Page<DistrictResponse> page = new PageImpl<>(list);
+    Pageable pageable = PageRequest.of(0,10);
+    Mockito.when(repository.searchDistrict("kim_thanh","40",pageable)).thenReturn(page);
 
-    DistrictPageResponse response = districtService.search(mockSearch, 5, 0, false);
-    assertThat(list).hasSize(response.getCount());
-    assertThat(list).hasSameSizeAs(response.getDistrictsResponse());
+    PageResponse<DistrictResponse> response = districtService.search(mockSearch, 10, 0, false);
+    assertThat(list).hasSize(response.getAmount());
   }
 
   @Test
@@ -144,8 +128,10 @@ class DistrictServiceTest {
   void testDetail_WhenGetSuccess_ReturnResponseBody() {
     District mockEntity = mockDistrict();
     DistrictInfoResponse districtInfo = mockDistrictInfo(mockEntity);
+
     Mockito.when(repository.existsByCode("01")).thenReturn(true);
     Mockito.when(repository.getByCode("01")).thenReturn(districtInfo);
+
     DistrictInfoResponse response = districtService.detail("01");
     Assertions.assertThat(mockEntity.getName()).isEqualTo(response.getDistrictName());
     Assertions.assertThat(mockEntity.getNameEn()).isEqualTo(response.getDistrictNameEn());

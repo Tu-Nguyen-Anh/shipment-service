@@ -1,8 +1,8 @@
 package com.ncsgroup.shipment.server.controller.address;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.ncsgroup.shipment.server.dto.PageResponse;
 import com.ncsgroup.shipment.server.dto.address.district.DistrictInfoResponse;
-import com.ncsgroup.shipment.server.dto.address.district.DistrictPageResponse;
 import com.ncsgroup.shipment.server.dto.address.district.DistrictResponse;
 import com.ncsgroup.shipment.server.entity.address.District;
 import com.ncsgroup.shipment.server.exception.address.AddressNotFoundException;
@@ -53,18 +53,6 @@ class DistrictControllerTest {
     return mockEntity;
   }
 
-  private District mockDistrict1() {
-    District mockEntity = new District();
-    mockEntity.setCode("293");
-    mockEntity.setName("Kim Thanh");
-    mockEntity.setNameEn("Kim Thanh");
-    mockEntity.setFullName("Huyen Kim Thanh");
-    mockEntity.setFullNameEn("Kim Thanh District");
-    mockEntity.setCodeName("kim_thanh");
-    mockEntity.setProvinceCode("30");
-    return mockEntity;
-  }
-
   private DistrictInfoResponse mockDistrictInfo(District district) {
     return new DistrictInfoResponse(
           district.getName(),
@@ -86,17 +74,17 @@ class DistrictControllerTest {
 
   @Test
   void testList_WhenAllTrue_Return200Body() throws Exception {
-    DistrictPageResponse mockPage = new DistrictPageResponse();
     District mockEntity = mockDistrict();
-    District mockEntity1 = mockDistrict1();
 
     List<DistrictResponse> list = new ArrayList<>();
     list.add(mockDistrictResponse(mockEntity));
-    list.add(mockDistrictResponse(mockEntity1));
-    mockPage.setDistrictsResponse(list);
+
+    PageResponse<DistrictResponse> mockPageResponse= new PageResponse<>();
+    mockPageResponse.setContent(list);
+    mockPageResponse.setAmount(list.size());
 
     Mockito.when(messageService.getMessage(GET_DISTRICT_SUCCESS, "en")).thenReturn("Success");
-    Mockito.when(districtService.search(null, 10, 0, true)).thenReturn(mockPage);
+    Mockito.when(districtService.search(null, 10, 0, true)).thenReturn(mockPageResponse);
 
     MvcResult mvcResult = mockMvc.perform(
                 post("/api/v1/districts")
@@ -113,16 +101,18 @@ class DistrictControllerTest {
 
   @Test
   void testList_WhenAllFalse_Return200Body() throws Exception {
-    DistrictPageResponse mockPage = new DistrictPageResponse();
     District mockEntity = mockDistrict();
-    District mockEntity1 = mockDistrict1();
+
     List<DistrictResponse> list = new ArrayList<>();
     list.add(mockDistrictResponse(mockEntity));
-    list.add(mockDistrictResponse(mockEntity1));
-    mockPage.setDistrictsResponse(list);
+
+    PageResponse<DistrictResponse> mockPageResponse= new PageResponse<>();
+    mockPageResponse.setContent(list);
+    mockPageResponse.setAmount(list.size());
+
     SearchDistrictRequest request = new SearchDistrictRequest("kim thanh", "30");
     Mockito.when(messageService.getMessage(GET_DISTRICT_SUCCESS, "en")).thenReturn("Success");
-    Mockito.when(districtService.search(request, 10, 0, false)).thenReturn(mockPage);
+    Mockito.when(districtService.search(request, 10, 0, false)).thenReturn(mockPageResponse);
 
     MvcResult mvcResult = mockMvc.perform(
                 post("/api/v1/districts")

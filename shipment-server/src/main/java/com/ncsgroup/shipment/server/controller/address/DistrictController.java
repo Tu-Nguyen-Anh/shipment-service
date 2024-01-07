@@ -1,8 +1,10 @@
 package com.ncsgroup.shipment.server.controller.address;
 
+import com.ncsgroup.shipment.server.dto.PageResponse;
 import com.ncsgroup.shipment.server.dto.ResponseGeneral;
 import com.ncsgroup.shipment.server.dto.address.district.DistrictInfoResponse;
 import com.ncsgroup.shipment.server.dto.address.district.DistrictPageResponse;
+import com.ncsgroup.shipment.server.dto.address.district.DistrictResponse;
 import com.ncsgroup.shipment.server.service.MessageService;
 import com.ncsgroup.shipment.server.service.address.DistrictService;
 import com.ncsgroup.shipment.client.dto.address.SearchDistrictRequest;
@@ -23,7 +25,7 @@ public class DistrictController {
   private final DistrictService districtService;
 
   @PostMapping
-  public ResponseGeneral<DistrictPageResponse> list(
+  public ResponseGeneral<PageResponse<DistrictResponse>> list(
         @RequestBody(required = false) SearchDistrictRequest request,
         @RequestParam(name = "size", defaultValue = "10") int size,
         @RequestParam(name = "page", defaultValue = "0") int page,
