@@ -1,10 +1,9 @@
 package com.ncsgroup.shipment.server.controller.address;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.ncsgroup.shipment.server.dto.PageResponse;
 import com.ncsgroup.shipment.server.dto.address.province.ProvinceInfoResponse;
-import com.ncsgroup.shipment.server.dto.address.province.ProvincePageResponse;
 import com.ncsgroup.shipment.server.dto.address.province.ProvinceResponse;
-import com.ncsgroup.shipment.server.entity.address.Province;
 import com.ncsgroup.shipment.server.exception.address.AddressNotFoundException;
 import com.ncsgroup.shipment.server.service.MessageService;
 import com.ncsgroup.shipment.server.service.address.ProvinceService;
@@ -16,7 +15,6 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
-import org.springframework.test.web.servlet.ResultActions;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -41,59 +39,40 @@ class ProvinceControllerTest {
   @Autowired
   ObjectMapper objectMapper;
 
-  private Province mockProvince01() {
-    Province mockEntity = new Province();
-    mockEntity.setCode("01");
-    mockEntity.setName("Ha Noi");
-    mockEntity.setNameEn("Ha Noi");
-    mockEntity.setFullName("Thanh Pho Ha Noi");
-    mockEntity.setFullNameEn("Ha Noi City");
-    mockEntity.setCodeName("ha_noi");
-    return mockEntity;
-  }
-
-  private Province mockProvince02() {
-    Province mockEntity = new Province();
-    mockEntity.setCode("02");
-    mockEntity.setName("Hai Duong");
-    mockEntity.setNameEn("Hai Duong");
-    mockEntity.setFullName("Tinh Hai Duong");
-    mockEntity.setFullNameEn("Hai Duong Province");
-    mockEntity.setCodeName("hai_duong");
-    return mockEntity;
-  }
-
-  private ProvinceInfoResponse mockResponse() {
-    ProvinceInfoResponse mockResponse = new ProvinceInfoResponse();
-    mockResponse.setProvinceName("Ha Noi");
-    mockResponse.setProvinceNameEn("Ha Noi");
-    mockResponse.setProvinceCodeName("ha_noi");
-    mockResponse.setCode("01");
+  private ProvinceResponse mockProvinceResponse() {
+    ProvinceResponse mockResponse = new ProvinceResponse();
+    mockResponse.setCode("02");
+    mockResponse.setName("Hai Duong");
+    mockResponse.setNameEn("Ha Duong");
+    mockResponse.setFullName("Tinh Hai Duong");
+    mockResponse.setFullNameEn("Hai Duong Province");
+    mockResponse.setCodeName("hai_duong");
     return mockResponse;
   }
 
-  private ProvinceResponse mockProvinceResponse(Province province) {
-    return ProvinceResponse.from(
-          province.getCode(),
-          province.getName(),
-          province.getNameEn(),
-          province.getFullName(),
-          province.getFullNameEn(),
-          province.getCodeName());
+  private ProvinceInfoResponse mockProvinceInfo() {
+    ProvinceInfoResponse mockProvinceResponse = new ProvinceInfoResponse();
+    mockProvinceResponse.setCode("02");
+    mockProvinceResponse.setProvinceName("Hai Duong");
+    mockProvinceResponse.setProvinceNameEn("Hai Duong");
+    mockProvinceResponse.setProvinceCodeName("hai_duong");
+    return mockProvinceResponse;
   }
 
   @Test
   void testList_WhenSearchByKeyWordAllFalse_Return200Body() throws Exception {
-    ProvincePageResponse mock = new ProvincePageResponse();
-    Province mockEntity = mockProvince01();
-    Province mockEntity1 = mockProvince02();
-    List<ProvinceResponse> list = new ArrayList<>();
-    list.add(mockProvinceResponse(mockEntity));
-    list.add(mockProvinceResponse(mockEntity1));
+    ProvinceResponse mockProvinceResponse = mockProvinceResponse();
 
-    mock.setProvinceResponses(list);
+    List<ProvinceResponse> list = new ArrayList<>();
+    list.add(mockProvinceResponse);
+
+    PageResponse<ProvinceResponse> mockPageResponse = new PageResponse<>();
+    mockPageResponse.setContent(list);
+    mockPageResponse.setAmount(list.size());
+
     Mockito.when(messageService.getMessage(GET_PROVINCE_SUCCESS, "en")).thenReturn("Get detail success");
-    Mockito.when(provinceService.list("01", 10, 0, false)).thenReturn(mock);
+    Mockito.when(provinceService.list("02", 10, 0, false)).thenReturn(mockPageResponse);
+
     MvcResult mvcResult = mockMvc.perform(get("/api/v1/provinces")
                 .param("keyword", "02")
                 .param("size", String.valueOf(10))
@@ -103,6 +82,7 @@ class ProvinceControllerTest {
           .andExpect(jsonPath("$.message").value("Get detail success"))
           .andDo(print())
           .andReturn();
+
     String responseBody = mvcResult.getResponse().getContentAsString();
     Assertions.assertEquals(responseBody,
           objectMapper.writeValueAsString(provinceController.list("02", 10, 0, false, "en")));
@@ -110,27 +90,28 @@ class ProvinceControllerTest {
 
   @Test
   void testList_WhenListIsAll_Returns200AndBody() throws Exception {
-    ProvincePageResponse mock = new ProvincePageResponse();
+    ProvinceResponse mockProvinceResponse = mockProvinceResponse();
+
     List<ProvinceResponse> list = new ArrayList<>();
-    list.add(ProvinceResponse.from(
-          mockProvince01().getCode(),
-          mockProvince01().getName(),
-          mockProvince01().getNameEn(),
-          mockProvince01().getFullName(),
-          mockProvince01().getFullNameEn(),
-          mockProvince01().getCodeName()
-    ));
-    mock.setProvinceResponses(list);
+    list.add(mockProvinceResponse);
+
+    PageResponse<ProvinceResponse> mockPageResponse = new PageResponse<>();
+    mockPageResponse.setContent(list);
+    mockPageResponse.setAmount(list.size());
+
     Mockito.when(messageService.getMessage(GET_PROVINCE_SUCCESS, "en")).thenReturn("Get detail success");
-    Mockito.when(provinceService.list("", 10, 0, true)).thenReturn(mock);
+    Mockito.when(provinceService.list("", 10, 0, true)).thenReturn(mockPageResponse);
+
     MvcResult mvcResult = mockMvc.perform(get("/api/v1/provinces")
                 .param("keyword", "")
                 .param("size", String.valueOf(10))
                 .param("page", String.valueOf(0))
                 .param("all", String.valueOf(true)))
           .andExpect(status().isOk())
+          .andDo(print())
           .andExpect(jsonPath("$.message").value("Get detail success"))
           .andReturn();
+
     String responseBody = mvcResult.getResponse().getContentAsString();
     Assertions.assertEquals(responseBody,
           objectMapper.writeValueAsString(provinceController.list("", 10, 0, true, "en")));
@@ -149,9 +130,11 @@ class ProvinceControllerTest {
 
   @Test
   void testDetails_WhenCodeExists_ReturnProvinceDetails() throws Exception {
-    ProvinceInfoResponse mockResponse = mockResponse();
-    Mockito.when(provinceService.detail("01")).thenReturn(mockResponse);
+    ProvinceInfoResponse mockInfoResponse = mockProvinceInfo();
+
+    Mockito.when(provinceService.detail("01")).thenReturn(mockInfoResponse);
     Mockito.when(messageService.getMessage(DETAIL_PROVINCE, "en")).thenReturn("Get detail success");
+
     MvcResult mvcResult = mockMvc.perform(
                 get("/api/v1/provinces/details/{code}", "01")
                       .contentType("application/json"))
@@ -159,6 +142,7 @@ class ProvinceControllerTest {
           .andExpect(status().isOk())
           .andExpect(jsonPath("$.message").value("Get detail success"))
           .andReturn();
+
     String responseBody = mvcResult.getResponse().getContentAsString();
     Assertions.assertEquals(responseBody,
           objectMapper.writeValueAsString(provinceController.detail("01", "en")));

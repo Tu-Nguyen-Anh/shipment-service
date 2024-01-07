@@ -1,7 +1,7 @@
 package com.ncsgroup.shipment.server.service.address.impl;
 
+import com.ncsgroup.shipment.server.dto.PageResponse;
 import com.ncsgroup.shipment.server.dto.address.province.ProvinceInfoResponse;
-import com.ncsgroup.shipment.server.dto.address.province.ProvincePageResponse;
 import com.ncsgroup.shipment.server.dto.address.province.ProvinceResponse;
 import com.ncsgroup.shipment.server.entity.address.Province;
 import com.ncsgroup.shipment.server.exception.address.AddressNotFoundException;
@@ -9,11 +9,9 @@ import com.ncsgroup.shipment.server.repository.address.ProvinceRepository;
 import com.ncsgroup.shipment.server.service.address.ProvinceService;
 import com.ncsgroup.shipment.server.service.base.BaseServiceImpl;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-
-import java.util.ArrayList;
-import java.util.List;
 
 @Slf4j
 public class ProvinceServiceImpl extends BaseServiceImpl<Province> implements ProvinceService {
@@ -25,16 +23,12 @@ public class ProvinceServiceImpl extends BaseServiceImpl<Province> implements Pr
   }
 
   @Override
-  public ProvincePageResponse list(String keyword, int size, int page, boolean isAll) {
+  public PageResponse<ProvinceResponse> list(String keyword, int size, int page, boolean isAll) {
     log.info("(list) keyword: {}, size : {}, page: {}, isAll: {}", keyword, size, page, isAll);
-    List<ProvinceResponse> list = new ArrayList<>();
     Pageable pageable = PageRequest.of(page, size);
-    List<Province> provinces = isAll ?
-          repository.findAll() : repository.search(keyword, pageable);
-    for (Province province : provinces) {
-      list.add(convertToResponse(province));
-    }
-    return new ProvincePageResponse(list, isAll ? provinces.size() : repository.countSearch(keyword));
+    Page<ProvinceResponse> list = isAll ?
+          repository.findAllProvinces(pageable) : repository.search(pageable, keyword);
+    return PageResponse.of(list.getContent(), (int) list.getTotalElements());
   }
 
   @Override
@@ -51,17 +45,6 @@ public class ProvinceServiceImpl extends BaseServiceImpl<Province> implements Pr
       log.error("(checkProvinceExist) ========> (AddressNotFoundException)");
       throw new AddressNotFoundException(true, false, false);
     }
-  }
-
-  public ProvinceResponse convertToResponse(Province province) {
-    return ProvinceResponse.from(
-          province.getCode(),
-          province.getName(),
-          province.getNameEn(),
-          province.getFullName(),
-          province.getFullNameEn(),
-          province.getCodeName()
-    );
   }
 
 }
