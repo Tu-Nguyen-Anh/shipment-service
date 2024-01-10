@@ -1,6 +1,8 @@
 package com.ncsgroup.shipment.server.controller.address;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.ncsgroup.shipment.server.dto.PageResponse;
+import com.ncsgroup.shipment.server.dto.address.district.DistrictResponse;
 import com.ncsgroup.shipment.server.dto.address.ward.WardInfoResponse;
 import com.ncsgroup.shipment.server.dto.address.ward.WardPageResponse;
 import com.ncsgroup.shipment.server.dto.address.ward.WardResponse;
@@ -74,15 +76,17 @@ class WardControllerTest {
 
   @Test
   void testList_WhenAllTrue_Return200Body() throws Exception {
-    WardPageResponse mockPage = new WardPageResponse();
     Ward mockEntity = mockWard();
 
     List<WardResponse> list = new ArrayList<>();
     list.add(mockWardResponse(mockEntity));
-    mockPage.setWardResponses(list);
+
+    PageResponse<WardResponse> mockPageResponse= new PageResponse<>();
+    mockPageResponse.setContent(list);
+    mockPageResponse.setAmount(list.size());
 
     Mockito.when(messageService.getMessage(GET_WARD_SUCCESS, "en")).thenReturn("Success");
-    Mockito.when(wardService.search(null, 10, 0, true)).thenReturn(mockPage);
+    Mockito.when(wardService.search(null, 10, 0, true)).thenReturn(mockPageResponse);
 
     MvcResult mvcResult = mockMvc.perform(
                 post("/api/v1/wards")
@@ -99,17 +103,19 @@ class WardControllerTest {
 
   @Test
   void testList_WhenAllAllSearchByRequest_Return200Body() throws Exception {
-    WardPageResponse mockPage = new WardPageResponse();
     Ward mockEntity = mockWard();
     SearchWardRequest request = new SearchWardRequest("tam ky", "293");
 
     List<WardResponse> list = new ArrayList<>();
     list.add(mockWardResponse(mockEntity));
 
-    mockPage.setWardResponses(list);
+
+    PageResponse<WardResponse> mockPageResponse= new PageResponse<>();
+    mockPageResponse.setContent(list);
+    mockPageResponse.setAmount(list.size());
 
     Mockito.when(messageService.getMessage(GET_WARD_SUCCESS, "en")).thenReturn("Success");
-    Mockito.when(wardService.search(request, 10, 0, false)).thenReturn(mockPage);
+    Mockito.when(wardService.search(request, 10, 0, false)).thenReturn(mockPageResponse);
 
     MvcResult mvcResult = mockMvc.perform(
                 post("/api/v1/wards")

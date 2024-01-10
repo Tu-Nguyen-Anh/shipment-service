@@ -1,8 +1,10 @@
 package com.ncsgroup.shipment.server.controller.address;
 
+import com.ncsgroup.shipment.server.dto.PageResponse;
 import com.ncsgroup.shipment.server.dto.ResponseGeneral;
 import com.ncsgroup.shipment.server.dto.address.ward.WardInfoResponse;
 import com.ncsgroup.shipment.server.dto.address.ward.WardPageResponse;
+import com.ncsgroup.shipment.server.dto.address.ward.WardResponse;
 import com.ncsgroup.shipment.server.service.MessageService;
 import com.ncsgroup.shipment.server.service.address.WardService;
 import com.ncsgroup.shipment.client.dto.address.SearchWardRequest;
@@ -23,7 +25,7 @@ public class WardController {
   private final MessageService messageService;
 
   @PostMapping
-  public ResponseGeneral<WardPageResponse> list(
+  public ResponseGeneral<PageResponse<WardResponse>> list(
         @RequestBody(required = false) SearchWardRequest request,
         @RequestParam(name = "size", defaultValue = "10") int size,
         @RequestParam(name = "page", defaultValue = "0") int page,
