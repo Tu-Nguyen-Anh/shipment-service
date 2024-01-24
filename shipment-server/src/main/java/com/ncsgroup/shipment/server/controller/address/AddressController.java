@@ -69,7 +69,7 @@ public class AddressController {
 
   @PutMapping("{id}")
   public ResponseGeneral<AddressResponse> update(
-        @Valid @PathVariable String id, @RequestBody AddressRequest request,
+         @PathVariable String id,@Valid @RequestBody AddressRequest request,
         @RequestHeader(name = LANGUAGE, defaultValue = DEFAULT_LANGUAGE) String language
   ) {
     log.info("(update) id: {}", id);
