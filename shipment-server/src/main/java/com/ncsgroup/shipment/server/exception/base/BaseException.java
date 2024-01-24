@@ -1,11 +1,12 @@
 package com.ncsgroup.shipment.server.exception.base;
 
-
 import lombok.Data;
 
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
+
+import static com.ncsgroup.shipment.server.constanst.Constants.CommonConstants.*;
 
 @Data
 public class BaseException extends RuntimeException {
@@ -16,8 +17,8 @@ public class BaseException extends RuntimeException {
 
   public BaseException() {
     this.status = 0;
-    this.code = "";
-    this.message = "";
+    this.code = DEFAULT_CODE;
+    this.message = DEFAULT_MESSAGE;
     this.params = new HashMap<>();
   }
 

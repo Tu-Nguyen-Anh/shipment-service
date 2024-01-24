@@ -3,7 +3,6 @@ package com.ncsgroup.shipment.server.controller.address;
 import com.ncsgroup.shipment.server.dto.PageResponse;
 import com.ncsgroup.shipment.server.dto.ResponseGeneral;
 import com.ncsgroup.shipment.server.dto.address.district.DistrictInfoResponse;
-import com.ncsgroup.shipment.server.dto.address.district.DistrictPageResponse;
 import com.ncsgroup.shipment.server.dto.address.district.DistrictResponse;
 import com.ncsgroup.shipment.server.service.MessageService;
 import com.ncsgroup.shipment.server.service.address.DistrictService;
@@ -12,9 +11,10 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
 
-import static com.ncsgroup.shipment.server.constanst.Constants.CommonConstants.DEFAULT_LANGUAGE;
-import static com.ncsgroup.shipment.server.constanst.Constants.CommonConstants.LANGUAGE;
+import static com.ncsgroup.shipment.server.constanst.Constants.CommonConstants.*;
+import static com.ncsgroup.shipment.server.constanst.Constants.CommonConstants.PARAM_ALL;
 import static com.ncsgroup.shipment.server.constanst.Constants.MessageCode.*;
+import static com.ncsgroup.shipment.server.constanst.Constants.VariableConstants.*;
 
 @Slf4j
 @RestController
@@ -27,9 +27,9 @@ public class DistrictController {
   @PostMapping
   public ResponseGeneral<PageResponse<DistrictResponse>> list(
         @RequestBody(required = false) SearchDistrictRequest request,
-        @RequestParam(name = "size", defaultValue = "10") int size,
-        @RequestParam(name = "page", defaultValue = "0") int page,
-        @RequestParam(name = "all", defaultValue = "false") boolean isAll,
+        @RequestParam(name = PARAM_SIZE, defaultValue = SIZE_DEFAULT) int size,
+        @RequestParam(name = PARAM_PAGE, defaultValue = PAGE_DEFAULT) int page,
+        @RequestParam(name = PARAM_ALL, defaultValue = IS_ALL_DEFAULT, required = false) boolean isAll,
         @RequestHeader(name = LANGUAGE, defaultValue = DEFAULT_LANGUAGE) String language
   ) {
     log.info("(search) request: {}, size:{}, page:{}, isAll:{}", request, size, page, isAll);
